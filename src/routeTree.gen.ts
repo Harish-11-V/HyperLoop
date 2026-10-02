@@ -14,11 +14,16 @@ import { Route as ShellRouteImport } from './routes/_shell'
 import { Route as ShellAgentsRouteImport } from './routes/_shell.agents'
 import { Route as ShellAnalyticsRouteImport } from './routes/_shell.analytics'
 import { Route as ShellChatRouteImport } from './routes/_shell.chat'
+import { Route as ShellCloudsRouteImport } from './routes/_shell.clouds'
 import { Route as ShellDashboardRouteImport } from './routes/_shell.dashboard'
+import { Route as ShellFilesRouteImport } from './routes/_shell.files'
 import { Route as ShellForecastRouteImport } from './routes/_shell.forecast'
 import { Route as ShellInsightsRouteImport } from './routes/_shell.insights'
+import { Route as ShellMigrationsRouteImport } from './routes/_shell.migrations'
 import { Route as ShellMonitoringRouteImport } from './routes/_shell.monitoring'
 import { Route as ShellRecommendationsRouteImport } from './routes/_shell.recommendations'
+import { Route as ShellSettingsRouteImport } from './routes/_shell.settings'
+import { Route as ShellSimulatorRouteImport } from './routes/_shell.simulator'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -44,9 +49,19 @@ const ShellChatRoute = ShellChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellCloudsRoute = ShellCloudsRouteImport.update({
+  id: '/clouds',
+  path: '/clouds',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellDashboardRoute = ShellDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellFilesRoute = ShellFilesRouteImport.update({
+  id: '/files',
+  path: '/files',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellForecastRoute = ShellForecastRouteImport.update({
@@ -59,6 +74,11 @@ const ShellInsightsRoute = ShellInsightsRouteImport.update({
   path: '/insights',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellMigrationsRoute = ShellMigrationsRouteImport.update({
+  id: '/migrations',
+  path: '/migrations',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellMonitoringRoute = ShellMonitoringRouteImport.update({
   id: '/monitoring',
   path: '/monitoring',
@@ -69,28 +89,48 @@ const ShellRecommendationsRoute = ShellRecommendationsRouteImport.update({
   path: '/recommendations',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellSettingsRoute = ShellSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellSimulatorRoute = ShellSimulatorRouteImport.update({
+  id: '/simulator',
+  path: '/simulator',
+  getParentRoute: () => ShellRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agents': typeof ShellAgentsRoute
   '/analytics': typeof ShellAnalyticsRoute
   '/chat': typeof ShellChatRoute
+  '/clouds': typeof ShellCloudsRoute
   '/dashboard': typeof ShellDashboardRoute
+  '/files': typeof ShellFilesRoute
   '/forecast': typeof ShellForecastRoute
   '/insights': typeof ShellInsightsRoute
+  '/migrations': typeof ShellMigrationsRoute
   '/monitoring': typeof ShellMonitoringRoute
   '/recommendations': typeof ShellRecommendationsRoute
+  '/settings': typeof ShellSettingsRoute
+  '/simulator': typeof ShellSimulatorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agents': typeof ShellAgentsRoute
   '/analytics': typeof ShellAnalyticsRoute
   '/chat': typeof ShellChatRoute
+  '/clouds': typeof ShellCloudsRoute
   '/dashboard': typeof ShellDashboardRoute
+  '/files': typeof ShellFilesRoute
   '/forecast': typeof ShellForecastRoute
   '/insights': typeof ShellInsightsRoute
+  '/migrations': typeof ShellMigrationsRoute
   '/monitoring': typeof ShellMonitoringRoute
   '/recommendations': typeof ShellRecommendationsRoute
+  '/settings': typeof ShellSettingsRoute
+  '/simulator': typeof ShellSimulatorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,11 +139,16 @@ export interface FileRoutesById {
   '/_shell/agents': typeof ShellAgentsRoute
   '/_shell/analytics': typeof ShellAnalyticsRoute
   '/_shell/chat': typeof ShellChatRoute
+  '/_shell/clouds': typeof ShellCloudsRoute
   '/_shell/dashboard': typeof ShellDashboardRoute
+  '/_shell/files': typeof ShellFilesRoute
   '/_shell/forecast': typeof ShellForecastRoute
   '/_shell/insights': typeof ShellInsightsRoute
+  '/_shell/migrations': typeof ShellMigrationsRoute
   '/_shell/monitoring': typeof ShellMonitoringRoute
   '/_shell/recommendations': typeof ShellRecommendationsRoute
+  '/_shell/settings': typeof ShellSettingsRoute
+  '/_shell/simulator': typeof ShellSimulatorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,22 +157,32 @@ export interface FileRouteTypes {
     | '/agents'
     | '/analytics'
     | '/chat'
+    | '/clouds'
     | '/dashboard'
+    | '/files'
     | '/forecast'
     | '/insights'
+    | '/migrations'
     | '/monitoring'
     | '/recommendations'
+    | '/settings'
+    | '/simulator'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/agents'
     | '/analytics'
     | '/chat'
+    | '/clouds'
     | '/dashboard'
+    | '/files'
     | '/forecast'
     | '/insights'
+    | '/migrations'
     | '/monitoring'
     | '/recommendations'
+    | '/settings'
+    | '/simulator'
   id:
     | '__root__'
     | '/'
@@ -135,11 +190,16 @@ export interface FileRouteTypes {
     | '/_shell/agents'
     | '/_shell/analytics'
     | '/_shell/chat'
+    | '/_shell/clouds'
     | '/_shell/dashboard'
+    | '/_shell/files'
     | '/_shell/forecast'
     | '/_shell/insights'
+    | '/_shell/migrations'
     | '/_shell/monitoring'
     | '/_shell/recommendations'
+    | '/_shell/settings'
+    | '/_shell/simulator'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,11 +244,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellChatRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/clouds': {
+      id: '/_shell/clouds'
+      path: '/clouds'
+      fullPath: '/clouds'
+      preLoaderRoute: typeof ShellCloudsRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/dashboard': {
       id: '/_shell/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof ShellDashboardRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/files': {
+      id: '/_shell/files'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof ShellFilesRouteImport
       parentRoute: typeof ShellRoute
     }
     '/_shell/forecast': {
@@ -205,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellInsightsRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/migrations': {
+      id: '/_shell/migrations'
+      path: '/migrations'
+      fullPath: '/migrations'
+      preLoaderRoute: typeof ShellMigrationsRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/monitoring': {
       id: '/_shell/monitoring'
       path: '/monitoring'
@@ -219,6 +300,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellRecommendationsRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/settings': {
+      id: '/_shell/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof ShellSettingsRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/simulator': {
+      id: '/_shell/simulator'
+      path: '/simulator'
+      fullPath: '/simulator'
+      preLoaderRoute: typeof ShellSimulatorRouteImport
+      parentRoute: typeof ShellRoute
+    }
   }
 }
 
@@ -226,22 +321,32 @@ interface ShellRouteChildren {
   ShellAgentsRoute: typeof ShellAgentsRoute
   ShellAnalyticsRoute: typeof ShellAnalyticsRoute
   ShellChatRoute: typeof ShellChatRoute
+  ShellCloudsRoute: typeof ShellCloudsRoute
   ShellDashboardRoute: typeof ShellDashboardRoute
+  ShellFilesRoute: typeof ShellFilesRoute
   ShellForecastRoute: typeof ShellForecastRoute
   ShellInsightsRoute: typeof ShellInsightsRoute
+  ShellMigrationsRoute: typeof ShellMigrationsRoute
   ShellMonitoringRoute: typeof ShellMonitoringRoute
   ShellRecommendationsRoute: typeof ShellRecommendationsRoute
+  ShellSettingsRoute: typeof ShellSettingsRoute
+  ShellSimulatorRoute: typeof ShellSimulatorRoute
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
   ShellAgentsRoute: ShellAgentsRoute,
   ShellAnalyticsRoute: ShellAnalyticsRoute,
   ShellChatRoute: ShellChatRoute,
+  ShellCloudsRoute: ShellCloudsRoute,
   ShellDashboardRoute: ShellDashboardRoute,
+  ShellFilesRoute: ShellFilesRoute,
   ShellForecastRoute: ShellForecastRoute,
   ShellInsightsRoute: ShellInsightsRoute,
+  ShellMigrationsRoute: ShellMigrationsRoute,
   ShellMonitoringRoute: ShellMonitoringRoute,
   ShellRecommendationsRoute: ShellRecommendationsRoute,
+  ShellSettingsRoute: ShellSettingsRoute,
+  ShellSimulatorRoute: ShellSimulatorRoute,
 }
 
 const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)
