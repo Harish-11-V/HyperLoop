@@ -37,8 +37,8 @@ function ChatPage() {
     {
       id: 0,
       role: "assistant",
-      text: "Hello. I can explain what is consuming your storage, what can be archived, and when you will hit your threshold. Answers in this build come from a mock service over the demo dataset — not from a live language model.",
-      sources: ["Demo dataset"],
+      text: "Hello. I can explain what is consuming your storage, what can be archived, and when you will hit your threshold. Answers come from a live language model grounded in your current storage dataset.",
+      sources: ["Live AI", "Storage dataset"],
     },
   ]);
   const [input, setInput] = useState("");
