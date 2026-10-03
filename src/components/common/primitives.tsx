@@ -5,7 +5,7 @@ export function Panel({
   className,
   children,
 }: {
-  className?: string;
+  className?: string | undefined;
   children: ReactNode;
 }) {
   return <div className={cn("glass-card p-5", className)}>{children}</div>;

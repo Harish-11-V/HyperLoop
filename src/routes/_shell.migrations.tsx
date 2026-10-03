@@ -31,7 +31,7 @@ function tone(s: MigrationStatus) {
 }
 
 function MigrationsPage() {
-  const [active, setActive] = useState(migrations[0].id);
+  const [active, setActive] = useState(migrations[0]!.id);
   const m = migrations.find((x) => x.id === active)!;
 
   return (
