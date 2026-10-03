@@ -50,12 +50,36 @@ function ChatPage() {
     if (!text || busy) return;
     setInput("");
     setBusy(true);
-    setMessages((m) => [...m, { id: Date.now(), role: "user", text }]);
-    const res = await ragService.ask(text);
+    const history = messages
+      .filter((m) => m.id !== 0)
+      .map((m) => ({ role: m.role, content: m.text }));
+    const userId = Date.now();
+    const assistantId = userId + 1;
     setMessages((m) => [
       ...m,
-      { id: Date.now() + 1, role: "assistant", text: res.answer, sources: res.sources },
+      { id: userId, role: "user", text },
+      { id: assistantId, role: "assistant", text: "", sources: ["Live AI", "Storage dataset"] },
     ]);
+    try {
+      await ragService.askLive(text, history, (partial) => {
+        setMessages((m) =>
+          m.map((msg) => (msg.id === assistantId ? { ...msg, text: partial } : msg)),
+        );
+      });
+    } catch (error) {
+      const fallback = ragService.mockAnswer(text);
+      setMessages((m) =>
+        m.map((msg) =>
+          msg.id === assistantId
+            ? {
+                ...msg,
+                text: `Live AI is unavailable right now (${error instanceof Error ? error.message : "unknown error"}). Falling back to the local demo service:\n\n${fallback.answer}`,
+                sources: fallback.sources,
+              }
+            : msg,
+        ),
+      );
+    }
     setBusy(false);
     requestAnimationFrame(() => endRef.current?.scrollIntoView({ behavior: "smooth" }));
   }
