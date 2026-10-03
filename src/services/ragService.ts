@@ -19,7 +19,7 @@ function mockAnswer(question: string): ChatAnswer {
   const q = question.toLowerCase();
 
   if (q.includes("most") || q.includes("consum")) {
-    const top = [...fileTypeBreakdown].sort((a, b) => b.sizeGb - a.sizeGb)[0];
+    const top = [...fileTypeBreakdown].sort((a, b) => b.sizeGb - a.sizeGb)[0]!;
     return {
       answer: `${top.type} account for the largest share of your demo dataset — ${gb(top.sizeGb)} across ${top.files.toLocaleString()} files. The single biggest folder is /Media/Raw Footage at 24.8 GB.`,
       sources: ["File Metadata", "Folder Index", "Storage History"],
@@ -68,7 +68,7 @@ function mockAnswer(question: string): ChatAnswer {
     };
   }
 
-  const biggest = [...files].sort((a, b) => b.sizeGb - a.sizeGb)[0];
+  const biggest = [...files].sort((a, b) => b.sizeGb - a.sizeGb)[0]!;
   return {
     answer: `Here is what the demo dataset shows: ${gb(storageSnapshot.usedGb)} of ${storageSnapshot.totalGb} GB used, ${files.length} indexed sample files, and the largest single file is ${biggest.name} at ${gb(biggest.sizeGb)}. Ask about archiving, growth, forecasts, migrations, or recommendations for more detail.`,
     sources: ["File Metadata", "Storage History"],
