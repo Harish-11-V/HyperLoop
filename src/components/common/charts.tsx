@@ -67,7 +67,7 @@ export function UsageAreaChart({
         </defs>
         <CartesianGrid stroke="var(--color-border)" vertical={false} />
         <XAxis dataKey="date" {...AXIS} />
-        <YAxis {...AXIS} unit=" GB" width={58} />
+        <YAxis {...AXIS} unit=" GB" width={66} />
         <Tooltip {...tooltipStyle} />
         <Area
           type="monotone"
