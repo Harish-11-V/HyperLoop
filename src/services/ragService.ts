@@ -1,4 +1,4 @@
-import { DEMO_MODE, delay, request } from "./apiClient";
+import { API_BASE_URL, DEMO_MODE, delay, request } from "./apiClient";
 import {
   fileTypeBreakdown,
   files,
@@ -76,6 +76,57 @@ function mockAnswer(question: string): ChatAnswer {
   };
 }
 
+export interface ChatHistoryMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+/**
+ * Streams a live answer from the /api/chat route (Lovable AI Gateway),
+ * grounded in the current storage dataset. Falls back to the local mock
+ * service when the live route is unavailable.
+ */
+async function askLive(
+  question: string,
+  history: ChatHistoryMessage[],
+  onToken: (text: string) => void,
+): Promise<ChatAnswer> {
+  const response = await fetch(`${API_BASE_URL}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messages: [...history, { role: "user" as const, content: question }].slice(-20),
+    }),
+  });
+
+  if (!response.ok || !response.body) {
+    let message = `Request failed (${response.status})`;
+    try {
+      const data = (await response.json()) as { error?: string };
+      if (data.error) message = data.error;
+    } catch {
+      /* keep default message */
+    }
+    throw new Error(message);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let answer = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    answer += decoder.decode(value, { stream: true });
+    onToken(answer);
+  }
+
+  return {
+    answer,
+    sources: ["Live AI (Lovable AI Gateway)", "Storage dataset"],
+    demo: false,
+  };
+}
+
 export const ragService = {
   ask: (question: string): Promise<ChatAnswer> =>
     DEMO_MODE
@@ -84,4 +135,8 @@ export const ragService = {
           method: "POST",
           body: JSON.stringify({ question }),
         }),
+
+  askLive,
+
+  mockAnswer,
 };

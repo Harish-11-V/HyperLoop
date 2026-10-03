@@ -37,8 +37,8 @@ function ChatPage() {
     {
       id: 0,
       role: "assistant",
-      text: "Hello. I can explain what is consuming your storage, what can be archived, and when you will hit your threshold. Answers in this build come from a mock service over the demo dataset — not from a live language model.",
-      sources: ["Demo dataset"],
+      text: "Hello. I can explain what is consuming your storage, what can be archived, and when you will hit your threshold. Answers come from a live language model grounded in your current storage dataset.",
+      sources: ["Live AI", "Storage dataset"],
     },
   ]);
   const [input, setInput] = useState("");
@@ -50,12 +50,36 @@ function ChatPage() {
     if (!text || busy) return;
     setInput("");
     setBusy(true);
-    setMessages((m) => [...m, { id: Date.now(), role: "user", text }]);
-    const res = await ragService.ask(text);
+    const history = messages
+      .filter((m) => m.id !== 0)
+      .map((m) => ({ role: m.role, content: m.text }));
+    const userId = Date.now();
+    const assistantId = userId + 1;
     setMessages((m) => [
       ...m,
-      { id: Date.now() + 1, role: "assistant", text: res.answer, sources: res.sources },
+      { id: userId, role: "user", text },
+      { id: assistantId, role: "assistant", text: "", sources: ["Live AI", "Storage dataset"] },
     ]);
+    try {
+      await ragService.askLive(text, history, (partial) => {
+        setMessages((m) =>
+          m.map((msg) => (msg.id === assistantId ? { ...msg, text: partial } : msg)),
+        );
+      });
+    } catch (error) {
+      const fallback = ragService.mockAnswer(text);
+      setMessages((m) =>
+        m.map((msg) =>
+          msg.id === assistantId
+            ? {
+                ...msg,
+                text: `Live AI is unavailable right now (${error instanceof Error ? error.message : "unknown error"}). Falling back to the local demo service:\n\n${fallback.answer}`,
+                sources: fallback.sources,
+              }
+            : msg,
+        ),
+      );
+    }
     setBusy(false);
     requestAnimationFrame(() => endRef.current?.scrollIntoView({ behavior: "smooth" }));
   }
@@ -65,7 +89,7 @@ function ChatPage() {
       <PageHeader
         title="Ask HyperLoop"
         description="Ask questions about your cloud storage."
-        actions={<DemoTag label="Mock AI service" />}
+        actions={<DemoTag label="Live AI · demo dataset" />}
       />
 
       <div className="grid gap-4 lg:grid-cols-[1fr_18rem]">
@@ -157,8 +181,9 @@ function ChatPage() {
             ))}
           </div>
           <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
-            Responses are produced by a local mock service over the demo dataset. The
-            request path is already shaped for a FastAPI → RAG → LLM backend.
+            Responses are generated live by a language model grounded in the current
+            storage dataset. If the live service is unreachable, the app falls back to
+            the local demo service.
           </p>
         </Panel>
       </div>
