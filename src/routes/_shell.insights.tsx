@@ -34,7 +34,7 @@ const CATEGORIES = ["All", "Opportunity", "Anomaly", "Prediction", "Observation"
 
 function InsightsPage() {
   const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>("All");
-  const [open, setOpen] = useState<string | null>(insights[0].id);
+  const [open, setOpen] = useState<string | null>(insights[0]!.id);
 
   const list = insights.filter((i) => filter === "All" || i.category === filter);
   const totalImpact = insights.reduce((s, i) => s + i.impactGb, 0);

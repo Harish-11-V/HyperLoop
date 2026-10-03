@@ -39,7 +39,7 @@ const dotClass: Record<AgentStageStatus, string> = {
 };
 
 function AgentsPage() {
-  const [runId, setRunId] = useState(agentRuns[0].id);
+  const [runId, setRunId] = useState(agentRuns[0]!.id);
   const [openStage, setOpenStage] = useState<string | null>("OBSERVE");
   const run = agentRuns.find((r) => r.id === runId)!;
 
@@ -60,7 +60,7 @@ function AgentsPage() {
                 key={r.id}
                 onClick={() => {
                   setRunId(r.id);
-                  setOpenStage(r.stages[0].stage);
+                  setOpenStage(r.stages[0]!.stage);
                 }}
                 className={cn(
                   "w-full rounded-lg border px-3 py-2.5 text-left transition-colors",

@@ -50,7 +50,7 @@ const RANGES = [
 ] as const;
 
 function AnalyticsPage() {
-  const [range, setRange] = useState<(typeof RANGES)[number]>(RANGES[2]);
+  const [range, setRange] = useState<(typeof RANGES)[number]>(RANGES[2]!);
   const trend = storageTrend.slice(-range.points);
   const growth = trend[trend.length - 1]!.usedGb - trend[0]!.usedGb;
   const inactive = files.filter((f) => f.lastAccessDays > 150);
@@ -95,7 +95,7 @@ function AnalyticsPage() {
         <MetricCard
           label="Largest category"
           value="Videos"
-          hint={`${fileTypeBreakdown[0].sizeGb} GB across ${fileTypeBreakdown[0].files} files`}
+          hint={`${fileTypeBreakdown[0]!.sizeGb} GB across ${fileTypeBreakdown[0]!.files} files`}
           tone="violet"
         />
         <MetricCard

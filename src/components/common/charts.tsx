@@ -48,7 +48,7 @@ export function UsageAreaChart({
   height = 260,
   projected = false,
 }: {
-  data: Array<Record<string, unknown>>;
+  data: object[];
   height?: number;
   projected?: boolean;
 }) {
@@ -160,7 +160,7 @@ export function ActivityLineChart({
   data,
   height = 240,
 }: {
-  data: Array<Record<string, unknown>>;
+  data: object[];
   height?: number;
 }) {
   return (

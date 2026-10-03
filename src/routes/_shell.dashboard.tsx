@@ -58,9 +58,9 @@ function DashboardPage() {
       : pct >= settings.warningThreshold
         ? "warning"
         : "healthy";
-  const topRec = recommendations.find((r) => r.status === "pending") ?? recommendations[0];
+  const topRec = recommendations.find((r) => r.status === "pending") ?? recommendations[0]!;
   const largest = [...files].sort((a, b) => b.sizeGb - a.sizeGb).slice(0, 5);
-  const latestRun = agentRuns[0];
+  const latestRun = agentRuns[0]!;
 
   return (
     <div>
