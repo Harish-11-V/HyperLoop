@@ -24,6 +24,7 @@ import { Route as ShellMonitoringRouteImport } from './routes/_shell.monitoring'
 import { Route as ShellRecommendationsRouteImport } from './routes/_shell.recommendations'
 import { Route as ShellSettingsRouteImport } from './routes/_shell.settings'
 import { Route as ShellSimulatorRouteImport } from './routes/_shell.simulator'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -99,6 +100,11 @@ const ShellSimulatorRoute = ShellSimulatorRouteImport.update({
   path: '/simulator',
   getParentRoute: () => ShellRoute,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/recommendations': typeof ShellRecommendationsRoute
   '/settings': typeof ShellSettingsRoute
   '/simulator': typeof ShellSimulatorRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/recommendations': typeof ShellRecommendationsRoute
   '/settings': typeof ShellSettingsRoute
   '/simulator': typeof ShellSimulatorRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/_shell/recommendations': typeof ShellRecommendationsRoute
   '/_shell/settings': typeof ShellSettingsRoute
   '/_shell/simulator': typeof ShellSimulatorRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/recommendations'
     | '/settings'
     | '/simulator'
+    | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
     | '/recommendations'
     | '/settings'
     | '/simulator'
+    | '/api/chat'
   id:
     | '__root__'
     | '/'
@@ -200,11 +211,13 @@ export interface FileRouteTypes {
     | '/_shell/recommendations'
     | '/_shell/settings'
     | '/_shell/simulator'
+    | '/api/chat'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ShellRoute: typeof ShellRouteWithChildren
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -314,6 +327,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellSimulatorRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -354,6 +374,7 @@ const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ShellRoute: ShellRouteWithChildren,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
