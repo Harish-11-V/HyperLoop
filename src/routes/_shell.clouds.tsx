@@ -42,7 +42,14 @@ function CloudsPage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {providers.map((p) => {
           const soon = p.status === "coming-soon";
-          const connected = p.status === "connected";
+          const isDrive = p.id === "gdrive";
+          const connected = isDrive ? live != null || p.status === "connected" : p.status === "connected";
+          const usedGb = isDrive && live ? live.usedGb : p.usedGb;
+          const totalGb = isDrive && live ? live.totalGb : p.totalGb;
+          const note =
+            isDrive && live
+              ? `Connected as ${live.userEmail || live.userName} — ${live.fileCount} files indexed live.`
+              : p.note;
           return (
             <Panel key={p.id} className={soon ? "opacity-70" : undefined}>
               <div className="flex items-start justify-between">
