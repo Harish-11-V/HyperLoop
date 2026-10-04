@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
   Boxes,
@@ -18,6 +19,7 @@ import {
   storageTrend,
 } from "@/data/demoData";
 import { useAppState } from "@/context/AppStateContext";
+import { driveService } from "@/services/driveService";
 import {
   DemoTag,
   MetricCard,
@@ -51,7 +53,15 @@ export const Route = createFileRoute("/_shell/dashboard")({
 
 function DashboardPage() {
   const { snapshot, recommendations, settings } = useAppState();
-  const pct = (snapshot.usedGb / snapshot.totalGb) * 100;
+  const { data: live } = useQuery({
+    queryKey: ["drive-overview"],
+    queryFn: driveService.getOverview,
+    staleTime: 60_000,
+  });
+  const usedGb = live?.usedGb ?? snapshot.usedGb;
+  const totalGb = live?.totalGb ?? snapshot.totalGb;
+  const filesScanned = live?.fileCount ?? snapshot.filesScanned;
+  const pct = (usedGb / totalGb) * 100;
   const health =
     pct >= settings.criticalThreshold
       ? "critical"
