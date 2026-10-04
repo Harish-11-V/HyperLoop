@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_shell/clouds")({
 
 function CloudsPage() {
   const { providers, toggleProvider } = useAppState();
-  const { data: live } = useQuery({
+  const { data: live, refetch, isFetching } = useQuery({
     queryKey: ["drive-overview"],
     queryFn: driveService.getOverview,
     staleTime: 60_000,
@@ -37,7 +37,7 @@ function CloudsPage() {
       <PageHeader
         title="Connected clouds"
         description="Google Drive is the first connector. Others are planned and not functional yet."
-        actions={<DemoTag />}
+        actions={<DemoTag label={live ? "Live · Google Drive" : "Demo data"} />}
       />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {providers.map((p) => {
@@ -82,10 +82,17 @@ function CloudsPage() {
                 <div className="mt-5 flex gap-2">
                   {connected && (
                     <button
-                      onClick={() => toast.success("Sync started", { description: "Simulated in demo mode." })}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs hover:border-primary/40"
+                      onClick={() => {
+                        void refetch().then(() =>
+                          toast.success("Sync complete", {
+                            description: "Latest metadata pulled from Google Drive.",
+                          }),
+                        );
+                      }}
+                      disabled={isFetching}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs hover:border-primary/40 disabled:opacity-40"
                     >
-                      <RefreshCw className="size-3.5" /> Sync
+                      <RefreshCw className={isFetching ? "size-3.5 animate-spin" : "size-3.5"} /> Sync
                     </button>
                   )}
                   <button
