@@ -63,7 +63,7 @@ function FilesPage() {
             ? b.modified.localeCompare(a.modified)
             : a.name.localeCompare(b.name),
       );
-  }, [q, type, sort]);
+  }, [files, q, type, sort]);
 
   const toggle = (id: string) =>
     setSelected((s) => {
@@ -89,7 +89,7 @@ function FilesPage() {
       <PageHeader
         title="File explorer"
         description="Indexed sample of your Google Drive with AI classification."
-        actions={<DemoTag />}
+        actions={<DemoTag label={live ? "Live · Google Drive" : "Demo data"} />}
       />
 
       <Panel className="p-0">
