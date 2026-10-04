@@ -69,13 +69,13 @@ function CloudsPage() {
                 )}
               </div>
               <h3 className="mt-4 text-sm font-semibold">{p.name}</h3>
-              <p className="mt-1 text-xs text-muted-foreground">{p.note}</p>
-              {p.usedGb !== undefined && p.totalGb && connected && (
+              <p className="mt-1 text-xs text-muted-foreground">{note}</p>
+              {usedGb !== undefined && totalGb && connected && (
                 <div className="mt-4">
                   <p className="mb-1.5 text-xs">
-                    {p.usedGb} GB / {p.totalGb} GB
+                    {usedGb.toFixed(1)} GB / {totalGb.toFixed(0)} GB
                   </p>
-                  <ProgressBar value={(p.usedGb / p.totalGb) * 100} tone="warning" />
+                  <ProgressBar value={(usedGb / totalGb) * 100} tone="warning" />
                 </div>
               )}
               {!soon && (
