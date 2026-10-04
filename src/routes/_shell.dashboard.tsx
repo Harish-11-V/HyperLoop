@@ -69,7 +69,7 @@ function DashboardPage() {
         ? "warning"
         : "healthy";
   const topRec = recommendations.find((r) => r.status === "pending") ?? recommendations[0]!;
-  const largest = [...files].sort((a, b) => b.sizeGb - a.sizeGb).slice(0, 5);
+  const largest = [...(live?.files ?? files)].sort((a, b) => b.sizeGb - a.sizeGb).slice(0, 5);
   const latestRun = agentRuns[0]!;
 
   return (
@@ -91,10 +91,10 @@ function DashboardPage() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
+          <MetricCard
           label="Storage used"
-          value={snapshot.usedGb.toFixed(1)}
-          unit={`/ ${snapshot.totalGb} GB`}
+          value={usedGb.toFixed(1)}
+          unit={`/ ${totalGb.toFixed(0)} GB`}
           hint={`${pct.toFixed(1)}% of quota`}
           icon={<HardDrive className="size-4" />}
         />
