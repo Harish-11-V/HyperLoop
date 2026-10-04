@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Cloud, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { useAppState } from "@/context/AppStateContext";
+import { driveService } from "@/services/driveService";
 import { DemoTag, Panel, PageHeader, ProgressBar, StatusBadge } from "@/components/common/primitives";
 
 export const Route = createFileRoute("/_shell/clouds")({
@@ -24,6 +26,11 @@ export const Route = createFileRoute("/_shell/clouds")({
 
 function CloudsPage() {
   const { providers, toggleProvider } = useAppState();
+  const { data: live } = useQuery({
+    queryKey: ["drive-overview"],
+    queryFn: driveService.getOverview,
+    staleTime: 60_000,
+  });
 
   return (
     <div>
