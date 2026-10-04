@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
   Boxes,
@@ -18,6 +19,7 @@ import {
   storageTrend,
 } from "@/data/demoData";
 import { useAppState } from "@/context/AppStateContext";
+import { driveService } from "@/services/driveService";
 import {
   DemoTag,
   MetricCard,
@@ -51,7 +53,15 @@ export const Route = createFileRoute("/_shell/dashboard")({
 
 function DashboardPage() {
   const { snapshot, recommendations, settings } = useAppState();
-  const pct = (snapshot.usedGb / snapshot.totalGb) * 100;
+  const { data: live } = useQuery({
+    queryKey: ["drive-overview"],
+    queryFn: driveService.getOverview,
+    staleTime: 60_000,
+  });
+  const usedGb = live?.usedGb ?? snapshot.usedGb;
+  const totalGb = live?.totalGb ?? snapshot.totalGb;
+  const filesScanned = live?.fileCount ?? snapshot.filesScanned;
+  const pct = (usedGb / totalGb) * 100;
   const health =
     pct >= settings.criticalThreshold
       ? "critical"
@@ -59,7 +69,7 @@ function DashboardPage() {
         ? "warning"
         : "healthy";
   const topRec = recommendations.find((r) => r.status === "pending") ?? recommendations[0]!;
-  const largest = [...files].sort((a, b) => b.sizeGb - a.sizeGb).slice(0, 5);
+  const largest = [...(live?.files ?? files)].sort((a, b) => b.sizeGb - a.sizeGb).slice(0, 5);
   const latestRun = agentRuns[0]!;
 
   return (
@@ -69,7 +79,7 @@ function DashboardPage() {
         description="Observe → Understand → Predict → Reason → Plan → Act → Verify → Learn."
         actions={
           <>
-            <DemoTag />
+            <DemoTag label={live ? "Live · Google Drive" : "Demo data"} />
             <Link
               to="/simulator"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
@@ -81,10 +91,10 @@ function DashboardPage() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
+          <MetricCard
           label="Storage used"
-          value={snapshot.usedGb.toFixed(1)}
-          unit={`/ ${snapshot.totalGb} GB`}
+          value={usedGb.toFixed(1)}
+          unit={`/ ${totalGb.toFixed(0)} GB`}
           hint={`${pct.toFixed(1)}% of quota`}
           icon={<HardDrive className="size-4" />}
         />
@@ -105,7 +115,7 @@ function DashboardPage() {
         />
         <MetricCard
           label="Indexed files"
-          value={snapshot.filesScanned.toLocaleString()}
+          value={filesScanned.toLocaleString()}
           hint={`${snapshot.changesDetected} changes in the last sweep`}
           icon={<Database className="size-4" />}
         />
@@ -123,7 +133,7 @@ function DashboardPage() {
 
         <Panel>
           <PanelHeader title="File type distribution" subtitle="Share of used storage" />
-          <TypeDonut data={fileTypeBreakdown} />
+          <TypeDonut data={live?.typeBreakdown ?? fileTypeBreakdown} />
         </Panel>
       </div>
 
@@ -194,7 +204,7 @@ function DashboardPage() {
             <div className="mt-2 flex justify-between text-[11px] text-muted-foreground">
               <span>0 GB</span>
               <span>Warning {settings.warningThreshold}%</span>
-              <span>{snapshot.totalGb} GB</span>
+              <span>{totalGb.toFixed(0)} GB</span>
             </div>
           </Panel>
         </div>

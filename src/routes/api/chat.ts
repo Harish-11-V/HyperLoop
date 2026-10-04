@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { ModelMessage } from "ai";
 import { z } from "zod";
 import { createResponsesCall } from "@/lib/ai/responses.server";
+import { getDriveOverview } from "@/lib/drive.server";
 import {
   fileTypeBreakdown,
   folderUsage,
@@ -24,8 +25,35 @@ const bodySchema = z.object({
     .max(40),
 });
 
-function buildSystemPrompt(): string {
+async function buildSystemPrompt(): Promise<string> {
+  let liveDrive: unknown = null;
+  try {
+    const overview = await getDriveOverview();
+    liveDrive = {
+      account: overview.userEmail,
+      usedGb: Number(overview.usedGb.toFixed(2)),
+      totalGb: Number(overview.totalGb.toFixed(1)),
+      fileCount: overview.fileCount,
+      typeBreakdown: overview.typeBreakdown,
+      topFolders: overview.folderUsage,
+      largestFiles: [...overview.files]
+        .sort((a, b) => b.sizeGb - a.sizeGb)
+        .slice(0, 15)
+        .map((f) => ({
+          name: f.name,
+          type: f.type,
+          sizeGb: Number(f.sizeGb.toFixed(3)),
+          modified: f.modified,
+          folder: f.folder,
+          classification: f.classification,
+        })),
+    };
+  } catch {
+    // Live Drive unavailable — answer from the demo dataset only.
+  }
+
   const context = {
+    liveGoogleDrive: liveDrive,
     storageSnapshot,
     recentTrend: storageTrend.slice(-8),
     forecast: storageForecast,
@@ -46,6 +74,7 @@ function buildSystemPrompt(): string {
   return [
     "You are HyperLoop, an AI storage-operations assistant inside the HyperLoop AI console.",
     "Answer questions about the user's cloud storage using ONLY the dataset below.",
+    "When liveGoogleDrive is present, it is the user's real, current Google Drive — prefer it over the demo figures and say the numbers are live.",
     "Be concise (2-5 sentences), specific, and cite the exact numbers from the data.",
     "If the data cannot answer a question, say so plainly and suggest what the app can show instead.",
     "Never invent files, sizes, or events that are not in the dataset.",
@@ -86,7 +115,7 @@ export const Route = createFileRoute("/api/chat")({
         try {
           const call = createResponsesCall(
             request,
-            { apiKey, system: buildSystemPrompt() },
+            { apiKey, system: await buildSystemPrompt() },
             messages,
           );
           return call.response();
