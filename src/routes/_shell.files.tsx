@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Archive, Search, X } from "lucide-react";
 import { toast } from "sonner";
-import { files, type DriveFile } from "@/data/demoData";
+import { files as demoFiles, type DriveFile } from "@/data/demoData";
+import { driveService } from "@/services/driveService";
 import { DemoTag, Panel, PageHeader, StatusBadge } from "@/components/common/primitives";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +44,13 @@ function FilesPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [detail, setDetail] = useState<DriveFile | null>(null);
   const [archived, setArchived] = useState<Set<string>>(new Set());
+
+  const { data: live } = useQuery({
+    queryKey: ["drive-overview"],
+    queryFn: driveService.getOverview,
+    staleTime: 60_000,
+  });
+  const files = live?.files ?? demoFiles;
 
   const rows = useMemo(() => {
     return files
