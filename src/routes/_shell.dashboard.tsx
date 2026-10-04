@@ -79,7 +79,7 @@ function DashboardPage() {
         description="Observe → Understand → Predict → Reason → Plan → Act → Verify → Learn."
         actions={
           <>
-            <DemoTag />
+            <DemoTag label={live ? "Live · Google Drive" : "Demo data"} />
             <Link
               to="/simulator"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
@@ -115,7 +115,7 @@ function DashboardPage() {
         />
         <MetricCard
           label="Indexed files"
-          value={snapshot.filesScanned.toLocaleString()}
+          value={filesScanned.toLocaleString()}
           hint={`${snapshot.changesDetected} changes in the last sweep`}
           icon={<Database className="size-4" />}
         />
@@ -133,7 +133,7 @@ function DashboardPage() {
 
         <Panel>
           <PanelHeader title="File type distribution" subtitle="Share of used storage" />
-          <TypeDonut data={fileTypeBreakdown} />
+          <TypeDonut data={live?.typeBreakdown ?? fileTypeBreakdown} />
         </Panel>
       </div>
 
@@ -204,7 +204,7 @@ function DashboardPage() {
             <div className="mt-2 flex justify-between text-[11px] text-muted-foreground">
               <span>0 GB</span>
               <span>Warning {settings.warningThreshold}%</span>
-              <span>{snapshot.totalGb} GB</span>
+              <span>{totalGb.toFixed(0)} GB</span>
             </div>
           </Panel>
         </div>
