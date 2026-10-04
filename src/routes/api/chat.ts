@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { ModelMessage } from "ai";
 import { z } from "zod";
 import { createResponsesCall } from "@/lib/ai/responses.server";
+import { getDriveOverview } from "@/lib/drive.server";
 import {
   fileTypeBreakdown,
   folderUsage,
@@ -24,8 +25,35 @@ const bodySchema = z.object({
     .max(40),
 });
 
-function buildSystemPrompt(): string {
+async function buildSystemPrompt(): Promise<string> {
+  let liveDrive: unknown = null;
+  try {
+    const overview = await getDriveOverview();
+    liveDrive = {
+      account: overview.userEmail,
+      usedGb: Number(overview.usedGb.toFixed(2)),
+      totalGb: Number(overview.totalGb.toFixed(1)),
+      fileCount: overview.fileCount,
+      typeBreakdown: overview.typeBreakdown,
+      topFolders: overview.folderUsage,
+      largestFiles: [...overview.files]
+        .sort((a, b) => b.sizeGb - a.sizeGb)
+        .slice(0, 15)
+        .map((f) => ({
+          name: f.name,
+          type: f.type,
+          sizeGb: Number(f.sizeGb.toFixed(3)),
+          modified: f.modified,
+          folder: f.folder,
+          classification: f.classification,
+        })),
+    };
+  } catch {
+    // Live Drive unavailable — answer from the demo dataset only.
+  }
+
   const context = {
+    liveGoogleDrive: liveDrive,
     storageSnapshot,
     recentTrend: storageTrend.slice(-8),
     forecast: storageForecast,
