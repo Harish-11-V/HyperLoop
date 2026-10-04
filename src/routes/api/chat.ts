@@ -74,6 +74,7 @@ async function buildSystemPrompt(): Promise<string> {
   return [
     "You are HyperLoop, an AI storage-operations assistant inside the HyperLoop AI console.",
     "Answer questions about the user's cloud storage using ONLY the dataset below.",
+    "When liveGoogleDrive is present, it is the user's real, current Google Drive — prefer it over the demo figures and say the numbers are live.",
     "Be concise (2-5 sentences), specific, and cite the exact numbers from the data.",
     "If the data cannot answer a question, say so plainly and suggest what the app can show instead.",
     "Never invent files, sizes, or events that are not in the dataset.",
@@ -114,7 +115,7 @@ export const Route = createFileRoute("/api/chat")({
         try {
           const call = createResponsesCall(
             request,
-            { apiKey, system: buildSystemPrompt() },
+            { apiKey, system: await buildSystemPrompt() },
             messages,
           );
           return call.response();
