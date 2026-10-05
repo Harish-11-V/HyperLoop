@@ -1,5 +1,8 @@
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
+import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { driveService } from "@/services/driveService";
 import {
   Activity,
   Bell,
@@ -13,6 +16,7 @@ import {
   LayoutDashboard,
   Lightbulb,
   ListChecks,
+  LogOut,
   Menu,
   MessageSquare,
   PanelLeftClose,
@@ -84,7 +88,31 @@ export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const { snapshot, unreadCount, providers } = useAppState();
+  const { snapshot: demoSnapshot, unreadCount, providers } = useAppState();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data: live } = useQuery({
+    queryKey: ["drive-overview"],
+    queryFn: driveService.getOverview,
+    staleTime: 60_000,
+  });
+  const snapshot = live
+    ? { ...demoSnapshot, provider: "Google Drive · Live", usedGb: live.usedGb, totalGb: Number(live.totalGb.toFixed(0)) }
+    : demoSnapshot;
+  const [userName, setUserName] = useState("");
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const u = data.user;
+      setUserName((u?.user_metadata?.["full_name"] as string | undefined) || u?.email || "");
+    });
+  }, []);
+  const initials = (userName || "U").split(/[\s@.]+/).filter(Boolean).slice(0, 2).map((s) => s[0]!.toUpperCase()).join("");
+  const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  };
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const pageTitle = TITLES[pathname] ?? "HyperLoop AI";
@@ -242,11 +270,19 @@ export function AppShell() {
               {notifOpen && <NotificationCenter onClose={() => setNotifOpen(false)} />}
             </div>
 
-            <div className="flex items-center gap-2 rounded-lg border border-border py-1 pr-3 pl-1">
+            <div className="flex items-center gap-2 rounded-lg border border-border py-1 pr-1 pl-1">
               <span className="grid size-7 place-items-center rounded-md bg-violet/15 text-xs font-semibold text-violet">
-                HK
+                {initials}
               </span>
-              <span className="hidden text-xs font-medium sm:block">Harish K.</span>
+              <span className="hidden max-w-[140px] truncate text-xs font-medium sm:block">{userName}</span>
+              <button
+                onClick={signOut}
+                aria-label="Sign out"
+                title="Sign out"
+                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <LogOut className="size-3.5" />
+              </button>
             </div>
           </div>
         </header>
