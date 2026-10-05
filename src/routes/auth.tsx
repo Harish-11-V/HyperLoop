@@ -41,7 +41,7 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string | undefined; password?: string | undefined }>({});
   const [currentEmail, setCurrentEmail] = useState<string | null>(null);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ function AuthPage() {
   }, [navigate]);
 
   const validate = () => {
-    const e: { email?: string; password?: string } = {};
+    const e: { email?: string | undefined; password?: string | undefined } = {};
     const em = emailSchema.safeParse(email);
     if (!em.success) e.email = em.error.issues[0]?.message;
     const pw = passwordSchema.safeParse(password);
