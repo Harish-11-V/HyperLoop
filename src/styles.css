@@ -148,3 +148,17 @@
     linear-gradient(to bottom, oklch(0.99 0 0 / 4%) 1px, transparent 1px);
   background-size: 28px 28px;
 }
+
+@utility auth-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: color-mix(in oklab, var(--color-card) 70%, transparent);
+  padding: 0.75rem 1rem 0.75rem 2.6rem;
+  font-size: 0.875rem;
+  color: var(--color-foreground);
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+  &:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 25%, transparent); }
+  &::placeholder { color: var(--color-muted-foreground); }
+}
