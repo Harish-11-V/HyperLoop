@@ -8,7 +8,6 @@
 
 ## Next
 - [ ] Wire Settings "Demo mode" toggle into the service layer
-- [ ] Real AI answers in Ask HyperLoop (needs Lovable Cloud + AI)
-- [ ] Real Google Drive connector (needs Google sign-in setup — waiting on user)
 - [ ] FastAPI backend endpoints (waiting on user's backend)
 - [x] Real AI answers in Ask HyperLoop chat (Lovable AI Gateway, streaming, grounded in storage dataset, mock fallback)
+- [ ] Make published Ask HyperLoop authenticate callers and answer only from current Google Drive metadata/content; verify live flow

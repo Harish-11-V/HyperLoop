@@ -11,3 +11,4 @@
 
 - UI never calls fetch directly; all data goes through `src/services/*` gated by `DEMO_MODE` — so mock data can be swapped for the FastAPI backend without UI changes.
 - App pages live under the `_shell` pathless layout which hosts the sidebar/topbar and shared app state.
+- Keep AI Gateway calls behind authenticated server routes and consume its typed native streaming events there, so credentials and private Drive context never reach the browser.
